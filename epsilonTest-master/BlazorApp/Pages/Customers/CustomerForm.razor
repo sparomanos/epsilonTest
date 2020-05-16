@@ -1,0 +1,92 @@
+﻿@using Model;
+
+    <EditForm Model="@customer" OnValidSubmit="@OnValidSubmit">
+
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>ID</label>
+            <div>
+                <InputText @bind-Value="@customer.Id" class="form-control col-lg-4" disabled/>
+               
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Company Name</label>
+            <div>
+                <InputText @bind-Value="@customer.CompanyName" class="form-control col-lg-6" />
+                <ValidationMessage For="@(() => customer.CompanyName)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Contact Name</label>
+            <div>
+                <InputText @bind-Value="@customer.ContactName" class="form-control col-lg-6" />
+                <ValidationMessage For="@(() => customer.ContactName)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Address</label>
+            <div>
+                <InputText @bind-Value="@customer.Address" class="form-control col-lg-6" />
+                <ValidationMessage For="@(() => customer.Address)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>City</label>
+            <div>
+                <InputText @bind-Value="@customer.City" class="form-control col-lg-6" />
+                <ValidationMessage For="@(() => customer.City)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Region</label>
+            <div>
+                <InputText @bind-Value="@customer.Region" class="form-control col-lg-6" />
+                <ValidationMessage For="@(() => customer.Region)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Postal Code</label>
+            <div>
+                <InputText @bind-Value="@customer.PostalCode" class="form-control col-lg-2" maxlength="5" pattern="[0-9]{5}" />
+                <ValidationMessage For="@(() => customer.PostalCode)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Country</label>
+            <div>
+                <InputText @bind-Value="@customer.Country" class="form-control col-lg-6" />
+                <ValidationMessage For="@(() => customer.Country)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Phone</label>
+            <div>
+                <InputText @bind-Value="@customer.Phone" class="form-control col-lg-3" maxlength="13" pattern="[0-9]{13"/>
+                <ValidationMessage For="@(() => customer.Phone)" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="pull-left">
+                <button type="submit" class="btn btn-info">
+                    <span class="oi oi-check"></span> @ButtonText
+                </button>
+            </div>
+            &emsp;
+            <div class="pull-right">
+                <div class="form-group">
+                    <a class="btn btn-info" href="customer/create"><span class="oi oi-plus"></span> Add New</a>
+                </div>
+            </div>
+        </div>
+        <div>
+            &nbsp;
+        </div>
+    </EditForm>
+
+@code {
+    [Parameter] public Customer customer { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+}

@@ -1,0 +1,48 @@
+﻿@page "/customer/edit/{CustomerId}"
+@using Model
+@using Data
+@using Helpers
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject ApiService apiService
+@inject IJSRuntime js
+
+@attribute [Authorize]
+
+<h3>Edit</h3>
+
+<CustomerForm ButtonText="Save" customer="customer"
+              OnValidSubmit="@EditCustomer" />
+
+
+@code {
+    [Parameter] public string CustomerId { get; set; }
+
+    Customer customer = new Customer();
+    private string route = "Customer";
+
+    protected async override Task OnParametersSetAsync()
+    {
+        try
+        {
+            customer = await apiService.Get<Customer>(CustomerId, route);
+        }
+        catch(Exception ex)
+        {
+            await js.InvokeAsync<object>("DisplayErrorMessage", ex.Message);
+        }
+    }
+
+    async Task EditCustomer()
+    {
+        try
+        {
+            customer = await apiService.Put<Customer>(customer, route);
+            await js.InvokeAsync<object>("DisplayMessage", "Successfull Update", "Record updates successfull", enumSweetAlertType.success.ToString());
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeAsync<object>("DisplayMessage", "Error", ex.Message, enumSweetAlertType.error.ToString());
+        }
+    }
+}

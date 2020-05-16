@@ -1,0 +1,35 @@
+﻿@page "/customer/create"
+@using BlazorApp.Data
+@using Model
+@using Helpers
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject ApiService apiService
+@inject IJSRuntime js
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize]
+
+<h3>Create</h3>
+
+<CustomerForm ButtonText="Create" customer="@customer"
+              OnValidSubmit="@PostData" />
+
+@code {
+    Customer customer = new Customer();
+    private string route = "Customer";
+
+    async Task PostData()
+    {
+        try
+        {
+            customer = await apiService.Post<Customer>(customer, route);
+            await js.InvokeAsync<object>("DisplayMessage", "Successfull Save", "Record saved successfull", enumSweetAlertType.success.ToString());
+            NavigationManager.NavigateTo("/customer/Edit/" + customer.Id);
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeAsync<object>("DisplayMessage", "Error", ex.Message, enumSweetAlertType.error.ToString());
+        }
+    }
+}

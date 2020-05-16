@@ -1,0 +1,110 @@
+﻿@page "/customers"
+@using Model;
+@using BlazorApp.Data
+@using Common
+@using Helpers
+@inject ApiService apiService
+@inject IJSRuntime js
+
+@attribute [Authorize]
+
+<h3>Customers</h3>
+
+@if (pagination == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="form-group">
+        <a class="btn btn-info" href="customer/create"><span class="oi oi-plus"></span> Add New</a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Company Name</th>
+                <th>Contact Name</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Region</th>
+                <th>PostalCode</th>
+                <th>Country</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Customer currentCustomer in pagination.Items)
+            {
+                <tr>
+                    <a class="btn btn-info" href="customer/edit/@currentCustomer.Id"><span class="oi oi-pencil"></span> </a>
+                    &emsp;
+                    <button class="btn btn-danger" @onclick="@(() => Delete(currentCustomer.Id))"><span class="oi oi-delete"></span></button>
+                    <td>@currentCustomer.CompanyName</td>
+                    <td>@currentCustomer.ContactName</td>
+                    <td>@currentCustomer.Address</td>
+                    <td>@currentCustomer.City</td>
+                    <td>@currentCustomer.Region</td>
+                    <td>@currentCustomer.PostalCode</td>
+                    <td>@currentCustomer.Country</td>
+                    <td>@currentCustomer.Phone</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+    <div class="row" />
+
+    <Pagination TotaPagesQuantity="totalPageQuantity" CurrentPage="currentPage" Radius="2"
+                SelectedPage="SelectedPage"></Pagination>
+}
+@code {
+    private int totalPageQuantity;
+    private int currentPage = 1;
+    private string route = "Customer";
+
+    public PaginationList<Customer> pagination;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        await LoadPage(currentPage);
+    }
+
+    private async Task LoadPage(int page)
+    {
+        try
+        {
+            pagination = await apiService.Get<Customer>(page, route);
+            currentPage = pagination.PageIndex;
+            totalPageQuantity = pagination.TotalPages;
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeAsync<object>("DisplayMessage", "Error", ex.Message, enumSweetAlertType.error.ToString());
+        }
+    }
+    private async Task SelectedPage(int page)
+    {
+        currentPage = page;
+        await LoadPage(page);
+    }
+    private async Task Delete(string id)
+    {
+        try
+        {
+            if (await js.InvokeAsync<bool>("DisplayConfirmMessage", "I want", "Delete", "Do you want delete this record?", "warning"))
+            {
+                await apiService.Delete(id, route);
+                await js.InvokeAsync<object>("DisplayMessage", "Delete", "Record deleted successfull", enumSweetAlertType.success.ToString());
+                await LoadPage(currentPage);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeAsync<object>("DisplayMessage", "Error", ex.Message, enumSweetAlertType.error.ToString());
+        }
+
+    }
+}
