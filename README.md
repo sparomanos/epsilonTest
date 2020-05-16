@@ -16,3 +16,5 @@ incudes:
     username: alice 
     password: alice
     
+    Indentiy server use appsettings.json to setup Blazor application and web api
+    
